@@ -1,0 +1,39 @@
+name: DinD Compose Test
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  docker-in-docker:
+    runs-on: ubuntu-latest
+
+    container:
+      image: docker:24.0.7-cli  # or your preferred stable docker version
+      options: --privileged     # Required for DinD to work
+      volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
+
+    services:
+      docker:
+        image: docker:20.10-dind
+        privileged: true
+        options: >-
+          --privileged
+          --tmpfs /run
+          --tmpfs /var/lib/docker
+          -v /var/lib/docker
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Build and run containers
+        run: docker compose up --build -d
+
+      - name: Check Go app logs
+        run: docker-compose logs go-app
+
+      - name: Tear down
+        if: always()
+        run: docker-compose down
