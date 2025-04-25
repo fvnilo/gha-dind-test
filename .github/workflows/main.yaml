@@ -14,16 +14,6 @@ jobs:
       volumes:
         - /var/run/docker.sock:/var/run/docker.sock
 
-    services:
-      docker:
-        image: docker:20.10-dind
-        privileged: true
-        options: >-
-          --privileged
-          --tmpfs /run
-          --tmpfs /var/lib/docker
-          -v /var/lib/docker
-
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
