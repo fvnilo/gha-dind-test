@@ -24,6 +24,9 @@ jobs:
       - name: Check Go app logs
         run: docker-compose logs go-app
 
+      - name: Describe the created table
+        run: docker run --rm --network container:$(docker compose ps -q db) postgres:16 psql "postgresql://testuser:testpass@localhost:5432/testdb" -c '\d hello'
+
       - name: Tear down
         if: always()
         run: docker-compose down
